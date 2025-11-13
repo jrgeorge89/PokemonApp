@@ -14,7 +14,7 @@ onMounted(() => {
 <template>
   <div id="app" class="min-h-screen" :class="uiStore.themeClass">
     <!-- Header de la aplicación -->
-    <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 shadow-lg">
+    <header class="bg-linear-to-r from-blue-600 to-purple-600 text-white py-4 shadow-lg">
       <div class="container mx-auto px-4">
         <div class="flex items-center justify-between">
           <!-- Logo y título -->

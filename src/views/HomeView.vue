@@ -20,21 +20,18 @@
       <!-- Estados de carga y error -->
       
       <!-- Loading inicial -->
-      <LoadingSpinner 
+      <LoadingSpinner
         v-if="pokemonStore.isLoading && !pokemonStore.pokemons.length"
         size="large"
         message="Cargando Pokémon..."
-        sub-message="Obteniendo datos de la Pokédex"
       />
 
       <!-- Error state -->
       <ErrorMessage
         v-else-if="pokemonStore.error && !pokemonStore.pokemons.length"
-        variant="error"
         title="Error al cargar Pokémon"
         :message="pokemonStore.error"
-        show-retry
-        :additional-info="'Verifica tu conexión a internet e inténtalo de nuevo.'"
+        :retryable="true"
         @retry="retryLoadPokemons"
       />
 
@@ -118,8 +115,7 @@
             v-for="pokemon in filteredPokemons"
             :key="pokemon.id"
             :pokemon="pokemon"
-            :is-favorite="isFavorite(pokemon.id)"
-            @toggle-favorite="handleToggleFavorite"
+            @click="handlePokemonClick"
           />
         </div>
 
@@ -134,11 +130,7 @@
           v-if="!pokemonStore.isLoading"
           :current-page="pokemonStore.currentPage"
           :total-pages="pokemonStore.totalPages"
-          :total="pokemonStore.totalCount"
-          :page-size="pokemonStore.itemsPerPage"
-          :has-filters="filterStore.hasActiveFilters"
           @page-change="handlePageChange"
-          @page-size-change="handlePageSizeChange"
         />
       </div>
     </div>
@@ -159,14 +151,19 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { usePokemonStore } from '../stores/pokemon.store'
 import { useFilterStore } from '../stores/filter.store'
-import SearchBar from '../components/SearchBar.vue'
-import TypeFilter from '../components/TypeFilter.vue'
-import PokemonCard from '../components/PokemonCard.vue'
-import LoadingSpinner from '../components/LoadingSpinner.vue'
-import ErrorMessage from '../components/ErrorMessage.vue'
-import Pagination from '../components/Pagination.vue'
+import SearchBar from '../components/common/SearchBar.vue'
+import TypeFilter from '../components/common/TypeFilter.vue'
+import PokemonCard from '../components/pokemon/PokemonCard.vue'
+import LoadingSpinner from '../components/common/LoadingSpinner.vue'
+import ErrorMessage from '../components/common/ErrorMessage.vue'
+import Pagination from '../components/common/Pagination.vue'
+import type { Pokemon } from '../types/pokemon.types'
+
+// Router
+const router = useRouter()
 
 // Stores
 const pokemonStore = usePokemonStore()
@@ -174,7 +171,6 @@ const filterStore = useFilterStore()
 
 // State
 const showScrollToTop = ref(false)
-const favorites = ref<number[]>([])
 
 // Computed
 const filteredPokemons = computed(() => {
@@ -203,7 +199,6 @@ const filteredPokemons = computed(() => {
 const loadInitialData = async () => {
   try {
     await pokemonStore.fetchPokemons()
-    loadFavorites()
   } catch (error) {
     console.error('Error loading initial data:', error)
   }
@@ -228,38 +223,9 @@ const clearAllFilters = () => {
   filterStore.clearFilters()
 }
 
-const isFavorite = (pokemonId: number): boolean => {
-  return favorites.value.includes(pokemonId)
-}
-
-const handleToggleFavorite = (pokemonId: number) => {
-  const index = favorites.value.indexOf(pokemonId)
-  if (index > -1) {
-    favorites.value.splice(index, 1)
-  } else {
-    favorites.value.push(pokemonId)
-  }
-  saveFavorites()
-}
-
-const loadFavorites = () => {
-  try {
-    const saved = localStorage.getItem('pokemon-favorites')
-    if (saved) {
-      favorites.value = JSON.parse(saved)
-    }
-  } catch (error) {
-    console.error('Error loading favorites:', error)
-    favorites.value = []
-  }
-}
-
-const saveFavorites = () => {
-  try {
-    localStorage.setItem('pokemon-favorites', JSON.stringify(favorites.value))
-  } catch (error) {
-    console.error('Error saving favorites:', error)
-  }
+const handlePokemonClick = (pokemon: Pokemon) => {
+  // Navigate to Pokemon detail page
+  router.push(`/pokemon/${pokemon.id}`)
 }
 
 const scrollToTop = () => {

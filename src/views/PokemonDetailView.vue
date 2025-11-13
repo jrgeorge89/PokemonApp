@@ -204,8 +204,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePokemonStore } from '../stores/pokemon.store'
-import LoadingSpinner from '../components/LoadingSpinner.vue'
-import ErrorMessage from '../components/ErrorMessage.vue'
+import LoadingSpinner from '../components/common/LoadingSpinner.vue'
+import ErrorMessage from '../components/common/ErrorMessage.vue'
 
 // Route and store
 const route = useRoute()
