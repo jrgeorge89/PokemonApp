@@ -1,28 +1,50 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useUiStore } from './stores/ui.store'
+import { useFilterStore } from './stores/filter.store'
 import DarkModeToggle from './components/common/DarkModeToggle.vue'
 
-// Configurar stores
+// Inicializar stores
 const uiStore = useUiStore()
+const filterStore = useFilterStore()
 
-// Inicializar tema al montar la aplicación
+// Computed para clase dinámica del wrapper
+const appClass = computed(() => ({
+  'bg-white dark:bg-gray-900': true,
+  'text-gray-900 dark:text-gray-100': true,
+  'transition-colors duration-300': true
+}))
+
+// Inicializar aplicación
 onMounted(() => {
   uiStore.initializeTheme()
+  // Inicializar datos necesarios
+  filterStore.loadAvailableTypes()
 })
 </script>
 
 <template>
-  <div id="app" class="min-h-screen" :class="uiStore.themeClass">
-    <!-- Header de la aplicación -->
-    <header class="bg-linear-to-r from-blue-600 to-purple-600 text-white py-4 shadow-lg">
+  <!-- Wrapper principal con clase dinámica para dark mode -->
+  <div id="app" class="min-h-screen" :class="[uiStore.themeClass, appClass]">
+    
+    <!-- Header con logo/título y DarkModeToggle -->
+    <header class="sticky top-0 z-40 bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 text-white py-4 shadow-lg backdrop-blur-sm">
       <div class="container mx-auto px-4">
         <div class="flex items-center justify-between">
+          
           <!-- Logo y título -->
-          <router-link to="/" class="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <h1 class="text-2xl font-bold text-gradient">
-              🎮 Pokémon App
-            </h1>
+          <router-link to="/" class="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+              <span class="text-2xl">⚡</span>
+            </div>
+            <div>
+              <h1 class="text-xl md:text-2xl font-bold text-white">
+                Pokédex
+              </h1>
+              <p class="text-xs text-white/80 hidden md:block">
+                Explora el mundo Pokémon
+              </p>
+            </div>
           </router-link>
           
           <!-- Navegación principal -->
@@ -151,43 +173,79 @@ onMounted(() => {
     </div>
 
     <!-- Contenido principal -->
-    <main class="flex-1">
+    <main class="flex-1 container mx-auto max-w-7xl px-4 py-6">
       <!-- Router View - aquí se renderizan las páginas -->
       <router-view />
     </main>
 
     <!-- Footer -->
-    <footer class="bg-gray-100 dark:bg-gray-800 py-6 mt-auto">
-      <div class="container mx-auto px-4 text-center text-gray-600 dark:text-gray-300">
-        <p>
-          Construido con ❤️ usando 
-          <span class="font-semibold text-blue-600">Vue 3</span>, 
-          <span class="font-semibold text-blue-500">TypeScript</span> y 
-          <span class="font-semibold text-cyan-500">Tailwind CSS</span>
-        </p>
-        <p class="mt-2 text-sm">
-          Datos proporcionados por <a href="https://pokeapi.co/" class="text-blue-500 hover:underline" target="_blank">PokéAPI</a>
-        </p>
+    <footer class="mt-auto bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-8">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <div class="flex items-center justify-center space-x-2 mb-4">
+            <span class="text-2xl">⚡</span>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Pokédex</h3>
+          </div>
+          <p class="text-gray-600 dark:text-gray-300 mb-2">
+            Construido con ❤️ usando 
+            <span class="font-semibold text-blue-600 dark:text-blue-400">Vue 3</span>, 
+            <span class="font-semibold text-green-600 dark:text-green-400">TypeScript</span> y 
+            <span class="font-semibold text-cyan-600 dark:text-cyan-400">Tailwind CSS</span>
+          </p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Datos proporcionados por 
+            <a 
+              href="https://pokeapi.co/" 
+              class="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 hover:underline transition-colors" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              PokéAPI
+            </a>
+          </p>
+          <div class="mt-4 text-xs text-gray-400 dark:text-gray-500">
+            © {{ new Date().getFullYear() }} Pokédex App. Hecho con fines educativos.
+          </div>
+        </div>
       </div>
     </footer>
   </div>
 </template>
 
 <style scoped>
-/* Estilos específicos del componente App */
-.text-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Layout con min-height 100vh */
+#app {
+  display: flex;
+  flex-direction: column;
 }
 
-/* Estilos para navegación */
+/* Header fijo o sticky con transiciones suaves para cambio de tema */
+header {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  backdrop-filter: blur(8px);
+}
+
+.dark header {
+  background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+}
+
+/* Container principal con max-width y padding */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+/* Estilos para navegación - colores de background y text para ambos modos */
 .nav-link {
   padding: 0.75rem;
   border-radius: 0.5rem;
   color: rgba(255, 255, 255, 0.8);
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
 }
 
 .nav-link:hover {
@@ -206,7 +264,8 @@ onMounted(() => {
   padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   color: rgb(55, 65, 81);
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
 }
 
 .dark .mobile-nav-link {
@@ -232,9 +291,20 @@ onMounted(() => {
   color: rgb(96, 165, 250);
 }
 
-/* Asegurar que el layout sea flexible */
-#app {
-  display: flex;
-  flex-direction: column;
+/* Transiciones suaves para cambio de tema */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Responsive - Asegurar que toda la app sea responsive */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  main {
+    padding: 1rem 0.25rem;
+  }
 }
 </style>
