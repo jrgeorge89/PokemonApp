@@ -96,7 +96,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="favorites-view">
+  <div class="favorites-view min-h-screen bg-gray-50 dark:bg-gray-900 py-6 px-4 transition-colors duration-200">
     <!-- Header de la página -->
     <div class="mb-8">
       <div class="flex items-center justify-between mb-4">

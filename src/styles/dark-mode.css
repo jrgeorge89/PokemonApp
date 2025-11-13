@@ -1,0 +1,432 @@
+/**
+ * Dark Mode Global Styles
+ * Estilos globales para el modo oscuro optimizados
+ */
+
+/* ================================
+   VARIABLES CSS PARA DARK MODE
+   ================================ */
+:root {
+  /* Colores modo claro */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-tertiary: #6b7280;
+  --border-primary: #e5e7eb;
+  --border-secondary: #d1d5db;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  
+  /* Colores específicos para la aplicación */
+  --pokemon-primary: #3b82f6;
+  --pokemon-secondary: #8b5cf6;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+}
+
+.dark {
+  /* Colores modo oscuro */
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --bg-tertiary: #374151;
+  --text-primary: #f9fafb;
+  --text-secondary: #e5e7eb;
+  --text-tertiary: #9ca3af;
+  --border-primary: #374151;
+  --border-secondary: #4b5563;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.5);
+}
+
+/* ================================
+   TRANSICIONES GLOBALES
+   ================================ */
+*,
+*::before,
+*::after {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* ================================
+   ESTILOS BASE MEJORADOS
+   ================================ */
+html {
+  scroll-behavior: smooth;
+  transition: color-scheme 300ms ease;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all 300ms ease;
+  font-feature-settings: 'rlig' 1, 'calt' 1;
+}
+
+/* ================================
+   SCROLLBAR PERSONALIZADA
+   ================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-secondary);
+  border-radius: 4px;
+  transition: background-color 200ms ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgb(75, 85, 99);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgb(107, 114, 128);
+}
+
+/* ================================
+   SELECCIÓN DE TEXTO
+   ================================ */
+::selection {
+  background-color: rgb(59, 130, 246, 0.2);
+  color: var(--text-primary);
+}
+
+.dark ::selection {
+  background-color: rgb(59, 130, 246, 0.3);
+  color: var(--text-primary);
+}
+
+/* ================================
+   ELEMENTOS DE FORMULARIO
+   ================================ */
+input,
+textarea,
+select {
+  background-color: var(--bg-primary);
+  border-color: var(--border-primary);
+  color: var(--text-primary);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--pokemon-primary);
+  box-shadow: 0 0 0 3px rgb(59, 130, 246, 0.1);
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  box-shadow: 0 0 0 3px rgb(59, 130, 246, 0.2);
+}
+
+/* Placeholder mejorado */
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-tertiary);
+  opacity: 1;
+}
+
+/* ================================
+   BOTONES GLOBALES
+   ================================ */
+button {
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ================================
+   FOCUS INDICATORS
+   ================================ */
+*:focus-visible {
+  outline: 2px solid var(--pokemon-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--pokemon-primary);
+  outline-offset: 2px;
+}
+
+/* ================================
+   ANIMACIONES PERSONALIZADAS
+   ================================ */
+@keyframes darkModeTransition {
+  0% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.dark-mode-transition {
+  animation: darkModeTransition 300ms ease-out;
+}
+
+/* ================================
+   MEJORAS DE CONTRASTE
+   ================================ */
+@media (prefers-contrast: high) {
+  :root {
+    --border-primary: #000000;
+    --border-secondary: #000000;
+  }
+  
+  .dark {
+    --border-primary: #ffffff;
+    --border-secondary: #ffffff;
+  }
+  
+  button,
+  input,
+  select,
+  textarea {
+    border-width: 2px;
+  }
+}
+
+/* ================================
+   MOTION REDUCTION
+   ================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ================================
+   PRINT STYLES
+   ================================ */
+@media print {
+  .dark {
+    --bg-primary: white;
+    --bg-secondary: white;
+    --text-primary: black;
+    --text-secondary: black;
+  }
+}
+
+/* ================================
+   UTILIDADES ESPECÍFICAS
+   ================================ */
+.glass-effect {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dark .glass-effect {
+  background-color: rgba(31, 41, 55, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-hover {
+  transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ================================
+   MEJORAS PARA POKÉMON CARDS
+   ================================ */
+.pokemon-type-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.pokemon-type-glow::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+.pokemon-type-glow:hover::before {
+  opacity: 1;
+}
+
+/* ================================
+   ERROR STATES MEJORADOS
+   ================================ */
+.error-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* ================================
+   LOADING STATES
+   ================================ */
+.skeleton {
+  background: linear-gradient(90deg, 
+    var(--bg-secondary) 25%, 
+    var(--bg-tertiary) 50%, 
+    var(--bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ================================
+   TEXTO MEJORADO
+   ================================ */
+.text-gradient {
+  background: linear-gradient(135deg, var(--pokemon-primary), var(--pokemon-secondary));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* ================================
+   TOOLTIPS PERSONALIZADOS
+   ================================ */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]:hover::before,
+[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+[data-tooltip]::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 200ms ease;
+  z-index: 1000;
+  margin-bottom: 0.25rem;
+  border: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-md);
+}
+
+[data-tooltip]::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--bg-tertiary);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 200ms ease;
+  z-index: 1001;
+}
+
+/* ================================
+   ESTADOS INTERACTIVOS
+   ================================ */
+.interactive {
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.interactive:hover {
+  transform: translateY(-1px);
+}
+
+.interactive:active {
+  transform: translateY(0);
+}
+
+/* ================================
+   GRID RESPONSIVO MEJORADO
+   ================================ */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .responsive-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* ================================
+   Z-INDEX HIERARCHY
+   ================================ */
+.z-dropdown { z-index: 1000; }
+.z-sticky { z-index: 1020; }
+.z-fixed { z-index: 1030; }
+.z-modal-backdrop { z-index: 1040; }
+.z-modal { z-index: 1050; }
+.z-popover { z-index: 1060; }
+.z-tooltip { z-index: 1070; }
+.z-toast { z-index: 1080; }

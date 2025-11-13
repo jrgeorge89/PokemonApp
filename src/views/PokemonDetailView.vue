@@ -1,5 +1,5 @@
 <template>
-  <div class="pokemon-detail-view min-h-screen bg-gray-50 dark:bg-gray-900 py-6">
+  <div class="pokemon-detail-view min-h-screen bg-gray-50 dark:bg-gray-900 py-6 transition-colors duration-200">
     <div class="container mx-auto px-4">
       <!-- Botón volver -->
       <div class="mb-6">

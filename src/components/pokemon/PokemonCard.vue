@@ -1,6 +1,6 @@
 <template>
   <div
-    class="pokemon-card bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2 hover:scale-105 overflow-hidden"
+    class="pokemon-card bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2 hover:scale-105 overflow-hidden border border-gray-200 dark:border-gray-600"
     @click="handleClick"
   >
     <!-- Botón de favorito -->
@@ -57,7 +57,7 @@
       </div>
 
       <!-- Nombre -->
-      <h3 class="pokemon-name text-lg font-semibold text-gray-900 dark:text-white capitalize mb-3 truncate">
+      <h3 class="pokemon-name text-lg font-semibold text-gray-900 dark:text-gray-100 capitalize mb-3 truncate">
         {{ pokemon.name }}
       </h3>
 
@@ -121,7 +121,7 @@ const pokemonImageUrl = computed(() => {
 const favoriteButtonClasses = computed(() => {
   return props.isFavorite
     ? 'bg-red-500 text-white hover:bg-red-600 shadow-lg'
-    : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500 shadow-md backdrop-blur-sm'
+    : 'bg-white/80 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-gray-700 hover:text-red-500 dark:hover:text-red-400 shadow-md backdrop-blur-sm'
 })
 
 // Methods
