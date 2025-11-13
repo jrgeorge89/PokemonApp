@@ -127,7 +127,7 @@
 
         <!-- Pagination component -->
         <Pagination
-          v-if="!pokemonStore.isLoading"
+          v-if="!pokemonStore.isLoading && !filterStore.hasActiveFilters"
           :current-page="pokemonStore.currentPage"
           :total-pages="pokemonStore.totalPages"
           @page-change="handlePageChange"
@@ -179,7 +179,7 @@ const filteredPokemons = computed(() => {
   // Aplicar filtro de búsqueda
   if (filterStore.debouncedSearchQuery) {
     const query = filterStore.debouncedSearchQuery.toLowerCase()
-    pokemons = pokemons.filter(pokemon => 
+    pokemons = pokemons.filter(pokemon =>
       pokemon.name.toLowerCase().includes(query) ||
       pokemon.id.toString().includes(query)
     )
@@ -195,10 +195,11 @@ const filteredPokemons = computed(() => {
   return pokemons
 })
 
+
 // Methods
 const loadInitialData = async () => {
   try {
-    await pokemonStore.fetchPokemons()
+    await pokemonStore.fetchPokemons(1, true)
   } catch (error) {
     console.error('Error loading initial data:', error)
   }
@@ -208,16 +209,11 @@ const retryLoadPokemons = async () => {
   await pokemonStore.fetchPokemons()
 }
 
-const handlePageChange = (page: number) => {
-  pokemonStore.setCurrentPage(page)
+const handlePageChange = async (page: number) => {
+  await pokemonStore.setCurrentPage(page)
   scrollToTop()
 }
 
-const handlePageSizeChange = (pageSize: number) => {
-  // Update items per page
-  pokemonStore.itemsPerPage = pageSize
-  pokemonStore.setCurrentPage(1) // Reset to first page
-}
 
 const clearAllFilters = () => {
   filterStore.clearFilters()
@@ -236,14 +232,7 @@ const handleScroll = () => {
   showScrollToTop.value = window.scrollY > 400
 }
 
-// Watchers
-watch(
-  () => pokemonStore.currentPage,
-  async () => {
-    if (pokemonStore.pokemons.length === 0 || pokemonStore.isLoading) return
-    await pokemonStore.fetchPokemons()
-  }
-)
+// Watchers - El watcher de currentPage se elimina porque setCurrentPage ya maneja la carga
 
 watch(
   () => filterStore.debouncedSearchQuery,

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useUiStore } from './stores/ui.store'
+import DarkModeToggle from './components/common/DarkModeToggle.vue'
 
 // Configurar stores
 const uiStore = useUiStore()
@@ -56,13 +57,11 @@ onMounted(() => {
             </router-link>
             
             <!-- Toggle dark mode -->
-            <button
-              @click="uiStore.toggleDarkMode"
-              class="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
-              :title="uiStore.isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
-            >
-              {{ uiStore.isDarkMode ? '☀️' : '🌙' }}
-            </button>
+            <DarkModeToggle
+              size="medium"
+              variant="minimal"
+              :show-tooltip="false"
+            />
           </nav>
 
           <!-- Botón menú móvil -->
@@ -136,12 +135,16 @@ onMounted(() => {
             
             <hr class="my-4 border-gray-200 dark:border-gray-600">
             
-            <button
-              @click="uiStore.toggleDarkMode"
-              class="mobile-nav-link w-full text-left"
-            >
-              {{ uiStore.isDarkMode ? '☀️ Modo claro' : '🌙 Modo oscuro' }}
-            </button>
+            <div class="flex items-center justify-between px-4 py-2">
+              <span class="text-gray-700 dark:text-gray-300">
+                {{ uiStore.isDarkMode ? 'Modo claro' : 'Modo oscuro' }}
+              </span>
+              <DarkModeToggle
+                size="small"
+                variant="default"
+                :show-tooltip="false"
+              />
+            </div>
           </nav>
         </div>
       </div>

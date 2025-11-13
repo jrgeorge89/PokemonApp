@@ -35,7 +35,7 @@ const routes: RouteRecordRaw[] = [
       showInNavigation: false,
       parentRoute: 'home'
     },
-    beforeEnter: (to, from, next) => {
+    beforeEnter: (to, _from, next) => {
       // Validar que el ID sea un número válido
       const id = to.params.id as string
       

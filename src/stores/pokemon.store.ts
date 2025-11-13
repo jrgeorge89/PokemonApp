@@ -80,14 +80,14 @@ export const usePokemonStore = defineStore('pokemon', () => {
     // Filtro por búsqueda de texto (nombre)
     if (filters.value.search.trim()) {
       const searchTerm = filters.value.search.toLowerCase().trim()
-      filtered = filtered.filter(pokemon => 
+      filtered = filtered.filter(pokemon =>
         pokemon.name.toLowerCase().includes(searchTerm)
       )
     }
 
     // Filtro por tipo de Pokémon
     if (filters.value.type) {
-      filtered = filtered.filter(pokemon => 
+      filtered = filtered.filter(pokemon =>
         pokemon.types.some((typeSlot: { slot: number; type: NamedAPIResource }) =>
           typeSlot.type.name.toLowerCase() === filters.value.type?.toLowerCase()
         )
@@ -148,7 +148,7 @@ export const usePokemonStore = defineStore('pokemon', () => {
 
       // Realizar petición a la API
       const response: PokemonListResponse = await getPokemonList(
-        itemsPerPage.value, 
+        itemsPerPage.value,
         offset
       )
 
