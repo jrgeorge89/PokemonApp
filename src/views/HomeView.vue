@@ -1,21 +1,25 @@
 <template>
   <div class="home-view min-h-screen bg-gray-50 dark:bg-gray-900 py-6">
     <div class="container mx-auto px-4">
-      <!-- Header de la página -->
-      <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Pokédex
-        </h1>
-        <p class="text-gray-600 dark:text-gray-400">
+      <!-- Descripción -->
+      <div class="mb-6">
+        <p class="text-gray-600 dark:text-gray-400 font-bold">
           Explora y descubre el mundo de los Pokémon
         </p>
       </div>
 
-      <!-- SearchBar component -->
-      <SearchBar />
+      <!-- Contenedor de filtros en línea -->
+      <div class="filters-container mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- SearchBar component - ocupa la mitad izquierda -->
+        <div class="search-section">
+          <SearchBar />
+        </div>
 
-      <!-- TypeFilter component -->
-      <TypeFilter />
+        <!-- TypeFilter component - ocupa la mitad derecha -->
+        <div class="filter-section">
+          <TypeFilter />
+        </div>
+      </div>
 
       <!-- Estados de carga y error -->
       
@@ -115,7 +119,9 @@
             v-for="pokemon in filteredPokemons"
             :key="pokemon.id"
             :pokemon="pokemon"
+            :is-favorite="isFavorite(pokemon.id)"
             @click="handlePokemonClick"
+            @toggle-favorite="handleToggleFavorite"
           />
         </div>
 
@@ -154,6 +160,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePokemonStore } from '../stores/pokemon.store'
 import { useFilterStore } from '../stores/filter.store'
+import { usePokemonFavorites } from '../composables/usePokemonFavorites'
 import SearchBar from '../components/common/SearchBar.vue'
 import TypeFilter from '../components/common/TypeFilter.vue'
 import PokemonCard from '../components/pokemon/PokemonCard.vue'
@@ -168,6 +175,9 @@ const router = useRouter()
 // Stores
 const pokemonStore = usePokemonStore()
 const filterStore = useFilterStore()
+
+// Composables
+const { isFavorite, toggleFavorite } = usePokemonFavorites()
 
 // State
 const showScrollToTop = ref(false)
@@ -222,6 +232,10 @@ const clearAllFilters = () => {
 const handlePokemonClick = (pokemon: Pokemon) => {
   // Navigate to Pokemon detail page
   router.push(`/pokemon/${pokemon.id}`)
+}
+
+const handleToggleFavorite = (pokemon: Pokemon) => {
+  toggleFavorite(pokemon)
 }
 
 const scrollToTop = () => {

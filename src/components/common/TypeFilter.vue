@@ -1,25 +1,20 @@
 <template>
   <div class="type-filter-container mb-6">
     <div class="relative">
-      <!-- Label -->
-      <label 
-        for="type-selector"
-        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-      >
-        Filtrar por tipo
-      </label>
-
       <!-- Select dropdown -->
       <div class="relative">
         <select
           id="type-selector"
           v-model="selectedType"
-          class="type-select w-full pl-4 pr-10 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 transition-all duration-200 appearance-none cursor-pointer"
+          :class="[
+            'type-select w-full pl-4 pr-10 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 transition-all duration-200 appearance-none cursor-pointer',
+            selectedType ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'
+          ]"
           :aria-label="selectAriaLabel"
           :aria-describedby="selectedType ? 'selected-type-badge' : undefined"
         >
-          <!-- Opción por defecto -->
-          <option value="">Todos los tipos</option>
+          <!-- Opción por defecto como placeholder -->
+          <option value="" selected>Seleccione el tipo de Pokémon</option>
           
           <!-- Loading state -->
           <option v-if="filterStore.isLoadingTypes" disabled>
@@ -111,8 +106,8 @@
     </div>
 
     <!-- Badge del tipo seleccionado -->
-    <div 
-      v-if="selectedType && selectedTypeInfo" 
+    <div
+      v-if="selectedType && selectedType !== '' && selectedTypeInfo"
       class="selected-type-badge mt-3 flex items-center"
       id="selected-type-badge"
     >
@@ -155,8 +150,8 @@
     </div>
 
     <!-- Tipos populares (cuando no hay filtro activo) -->
-    <div 
-      v-if="!selectedType && !filterStore.isLoadingTypes"
+    <div
+      v-if="(!selectedType || selectedType === '') && !filterStore.isLoadingTypes"
       class="quick-filters mt-3"
     >
       <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
@@ -195,7 +190,7 @@ const popularTypes = ref([
 const selectedType = computed({
   get: () => filterStore.selectedType,
   set: (value: string | null) => {
-    filterStore.setSelectedType(value || null)
+    filterStore.setSelectedType(value || '')
   }
 })
 
@@ -206,7 +201,7 @@ const sortedTypes = computed(() => {
 })
 
 const selectedTypeInfo = computed(() => {
-  if (!selectedType.value) return null
+  if (!selectedType.value || selectedType.value === '') return null
   return filterStore.availableTypes.find(type => type === selectedType.value)
 })
 
@@ -270,7 +265,7 @@ const getTypeColorClasses = (type: string): string => {
 }
 
 const clearTypeFilter = () => {
-  filterStore.setSelectedType(null)
+  filterStore.setSelectedType('')
 }
 
 const selectType = (typeName: string) => {

@@ -1,8 +1,34 @@
 <template>
-  <div 
+  <div
     class="pokemon-card bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-2 hover:scale-105 overflow-hidden"
     @click="handleClick"
   >
+    <!-- Botón de favorito -->
+    <button
+      @click.stop="handleToggleFavorite"
+      class="favorite-button absolute top-3 right-3 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
+      :class="favoriteButtonClasses"
+      :title="isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'"
+    >
+      <svg
+        class="w-5 h-5 transition-transform duration-200"
+        :class="{ 'scale-110': isFavorite }"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          v-if="isFavorite"
+          d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+        />
+        <path
+          v-else
+          fill-rule="evenodd"
+          d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </button>
+
     <!-- Imagen del Pokémon -->
     <div class="pokemon-image-container flex justify-center items-center h-32 pt-4 px-4">
       <img
@@ -60,13 +86,17 @@ import type { Pokemon } from '../../types/pokemon.types'
 // Props
 interface Props {
   pokemon: Pokemon
+  isFavorite?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  isFavorite: false
+})
 
 // Emits
 const emit = defineEmits<{
   click: [pokemon: Pokemon]
+  toggleFavorite: [pokemon: Pokemon]
 }>()
 
 // State
@@ -87,9 +117,20 @@ const pokemonImageUrl = computed(() => {
          null
 })
 
+// Computed
+const favoriteButtonClasses = computed(() => {
+  return props.isFavorite
+    ? 'bg-red-500 text-white hover:bg-red-600 shadow-lg'
+    : 'bg-white/80 text-gray-600 hover:bg-white hover:text-red-500 shadow-md backdrop-blur-sm'
+})
+
 // Methods
 const handleClick = () => {
   emit('click', props.pokemon)
+}
+
+const handleToggleFavorite = () => {
+  emit('toggleFavorite', props.pokemon)
 }
 
 const handleImageError = () => {
@@ -215,6 +256,29 @@ const getTypeColorClasses = (type: string): string => {
   }
 }
 
+/* Botón de favorito */
+.favorite-button {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.favorite-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.favorite-button:active {
+  transform: scale(0.95);
+}
+
+/* Dark mode para botón de favorito */
+.dark .favorite-button {
+  background: rgba(31, 41, 55, 0.9);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
 /* Accesibilidad */
 .pokemon-card:focus {
   outline: 2px solid #3b82f6;
@@ -222,6 +286,15 @@ const getTypeColorClasses = (type: string): string => {
 }
 
 .pokemon-card:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.favorite-button:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.favorite-button:focus:not(:focus-visible) {
   outline: none;
 }
 

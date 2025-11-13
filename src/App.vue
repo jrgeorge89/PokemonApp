@@ -49,33 +49,19 @@ onMounted(() => {
           
           <!-- Navegación principal -->
           <nav class="hidden md:flex items-center space-x-6">
-            <router-link 
-              to="/" 
+            <router-link
+              to="/"
               class="nav-link"
               :class="{ 'active': $route.name === 'home' }"
             >
               Inicio
             </router-link>
-            <router-link 
-              to="/search" 
-              class="nav-link"
-              :class="{ 'active': $route.name === 'search' }"
-            >
-              Buscar
-            </router-link>
-            <router-link 
-              to="/favorites" 
+            <router-link
+              to="/favorites"
               class="nav-link"
               :class="{ 'active': $route.name === 'favorites' }"
             >
               Favoritos
-            </router-link>
-            <router-link 
-              to="/about" 
-              class="nav-link"
-              :class="{ 'active': $route.name === 'about' }"
-            >
-              Acerca de
             </router-link>
             
             <!-- Toggle dark mode -->
@@ -126,33 +112,19 @@ onMounted(() => {
           </div>
           
           <nav class="space-y-2">
-            <router-link 
-              to="/" 
+            <router-link
+              to="/"
               class="mobile-nav-link"
               @click="uiStore.toggleSidebar"
             >
               🏠 Inicio
             </router-link>
-            <router-link 
-              to="/search" 
-              class="mobile-nav-link"
-              @click="uiStore.toggleSidebar"
-            >
-              🔍 Buscar
-            </router-link>
-            <router-link 
-              to="/favorites" 
+            <router-link
+              to="/favorites"
               class="mobile-nav-link"
               @click="uiStore.toggleSidebar"
             >
               ❤️ Favoritos
-            </router-link>
-            <router-link 
-              to="/about" 
-              class="mobile-nav-link"
-              @click="uiStore.toggleSidebar"
-            >
-              ℹ️ Acerca de
             </router-link>
             
             <hr class="my-4 border-gray-200 dark:border-gray-600">
@@ -187,9 +159,8 @@ onMounted(() => {
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Pokédex</h3>
           </div>
           <p class="text-gray-600 dark:text-gray-300 mb-2">
-            Construido con ❤️ usando 
-            <span class="font-semibold text-blue-600 dark:text-blue-400">Vue 3</span>, 
-            <span class="font-semibold text-green-600 dark:text-green-400">TypeScript</span> y 
+            <span class="font-semibold text-blue-600 dark:text-blue-400">Vue 3</span>,
+            <span class="font-semibold text-green-600 dark:text-green-400">TypeScript</span> y
             <span class="font-semibold text-cyan-600 dark:text-cyan-400">Tailwind CSS</span>
           </p>
           <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -204,7 +175,7 @@ onMounted(() => {
             </a>
           </p>
           <div class="mt-4 text-xs text-gray-400 dark:text-gray-500">
-            © {{ new Date().getFullYear() }} Pokédex App. Hecho con fines educativos.
+            © {{ new Date().getFullYear() }} Pokémon App - Jorge Orlando Rincon Estrada
           </div>
         </div>
       </div>

@@ -50,18 +50,6 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/search',
-    name: 'search',
-    component: () => import('../views/SearchView.vue'),
-    meta: {
-      title: 'Búsqueda Avanzada de Pokémon',
-      description: 'Busca Pokémon por nombre, tipo y características específicas',
-      requiresAuth: false,
-      showInNavigation: true,
-      icon: 'search'
-    }
-  },
-  {
     path: '/favorites',
     name: 'favorites',
     component: () => import('../views/FavoritesView.vue'),
@@ -71,18 +59,6 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: false,
       showInNavigation: true,
       icon: 'heart'
-    }
-  },
-  {
-    path: '/about',
-    name: 'about',
-    component: () => import('../views/AboutView.vue'),
-    meta: {
-      title: 'Acerca de la Pokédex',
-      description: 'Información sobre la aplicación y tecnologías utilizadas',
-      requiresAuth: false,
-      showInNavigation: true,
-      icon: 'info'
     }
   },
   {

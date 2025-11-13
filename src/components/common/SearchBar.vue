@@ -3,61 +3,67 @@
     <div class="relative">
       <!-- Input de búsqueda -->
       <div class="relative flex items-center">
-        <!-- Icono de lupa -->
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <svg 
-            class="w-5 h-5 text-gray-400 dark:text-gray-500 transition-colors"
-            :class="{ 'text-blue-500 dark:text-blue-400': searchQuery.length > 0 }"
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path 
-              stroke-linecap="round" 
-              stroke-linejoin="round" 
-              stroke-width="2" 
-              d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-        </div>
-
         <!-- Campo de entrada -->
         <input
           v-model="searchQuery"
           type="text"
-          class="search-input w-full pl-12 pr-12 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 transition-all duration-200"
+          class="search-input w-full pl-4 pr-10 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 transition-all duration-200"
           placeholder="Buscar Pokémon por nombre..."
           :aria-label="searchAriaLabel"
-          :aria-describedby="searchQuery ? 'search-clear-button' : undefined"
+          :aria-describedby="searchQuery ? 'search-clear-button' : 'search-icon'"
           autocomplete="off"
           spellcheck="false"
         >
 
-        <!-- Botón limpiar -->
-        <button
-          v-if="searchQuery.length > 0"
-          @click="clearSearch"
-          type="button"
-          class="clear-button absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:text-blue-500 dark:focus:text-blue-400 transition-colors duration-200"
-          :aria-label="clearAriaLabel"
-          id="search-clear-button"
-        >
-          <svg 
-            class="w-5 h-5"
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-            aria-hidden="true"
+        <!-- Icono de lupa o Botón limpiar -->
+        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+          <!-- Botón limpiar (cuando hay texto) -->
+          <button
+            v-if="searchQuery.length > 0"
+            @click="clearSearch"
+            type="button"
+            class="clear-button text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 focus:outline-none focus:text-blue-500 dark:focus:text-blue-400 transition-colors duration-200"
+            :aria-label="clearAriaLabel"
+            id="search-clear-button"
           >
-            <path 
-              stroke-linecap="round" 
-              stroke-linejoin="round" 
-              stroke-width="2" 
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          
+          <!-- Icono de lupa (cuando no hay texto) -->
+          <div
+            v-else
+            class="pointer-events-none"
+            id="search-icon"
+          >
+            <svg
+              class="w-5 h-5 text-gray-400 dark:text-gray-500 transition-colors"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+        </div>
       </div>
 
       <!-- Indicador de búsqueda activa -->

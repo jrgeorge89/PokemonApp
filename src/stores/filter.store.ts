@@ -34,7 +34,7 @@ export const useFilterStore = defineStore('filter', () => {
   const debouncedSearchQuery = ref<string>('')
 
   /** Tipo de Pokémon seleccionado para filtrar */
-  const selectedType = ref<string | null>(null)
+  const selectedType = ref<string | null>('')
 
   /** Lista de tipos disponibles cargados desde la API */
   const availableTypes = ref<string[]>([])
@@ -85,7 +85,7 @@ export const useFilterStore = defineStore('filter', () => {
    * Incluye tanto búsqueda (con debounce) como filtro de tipo
    */
   const hasActiveFilters = computed((): boolean => {
-    return debouncedSearchQuery.value.length > 0 || selectedType.value !== null
+    return debouncedSearchQuery.value.length > 0 || (selectedType.value !== null && selectedType.value !== '')
   })
 
   /**
@@ -94,12 +94,12 @@ export const useFilterStore = defineStore('filter', () => {
    */
   const filterConfig = computed((): FilterConfig => {
     const searchActive = debouncedSearchQuery.value.length > 0
-    const typeActive = selectedType.value !== null
+    const typeActive = selectedType.value !== null && selectedType.value !== ''
     const filtersCount = (searchActive ? 1 : 0) + (typeActive ? 1 : 0)
 
     return {
       searchQuery: debouncedSearchQuery.value,
-      selectedType: selectedType.value,
+      selectedType: selectedType.value || null,
       hasActiveFilters: hasActiveFilters.value,
       filtersApplied: filtersCount
     }
@@ -167,8 +167,8 @@ export const useFilterStore = defineStore('filter', () => {
 
   /**
    * Cambia el filtro de tipo seleccionado
-   * 
-   * @param type - Tipo de Pokémon a filtrar, null para remover filtro
+   *
+   * @param type - Tipo de Pokémon a filtrar, null o string vacío para remover filtro
    */
   function setSelectedType(type: string | null): void {
     // Validar entrada
@@ -177,16 +177,19 @@ export const useFilterStore = defineStore('filter', () => {
       return
     }
 
-    // Validar que el tipo existe en la lista de disponibles
-    if (type !== null && availableTypes.value.length > 0) {
-      if (!availableTypes.value.includes(type)) {
-        console.warn(`Type "${type}" is not available in the types list`)
+    // Normalizar null a string vacío para consistency con el HTML select
+    const normalizedType = type === null ? '' : type
+
+    // Validar que el tipo existe en la lista de disponibles (si no está vacío)
+    if (normalizedType !== '' && availableTypes.value.length > 0) {
+      if (!availableTypes.value.includes(normalizedType)) {
+        console.warn(`Type "${normalizedType}" is not available in the types list`)
         return
       }
     }
 
-    selectedType.value = type
-    console.log(`Selected type updated: ${type || 'None'}`)
+    selectedType.value = normalizedType
+    console.log(`Selected type updated: ${normalizedType || 'None'}`)
   }
 
   /**
@@ -203,7 +206,7 @@ export const useFilterStore = defineStore('filter', () => {
     // Resetear estado
     searchQuery.value = ''
     debouncedSearchQuery.value = ''
-    selectedType.value = null
+    selectedType.value = ''
 
     console.log('All filters cleared')
   }
@@ -219,7 +222,7 @@ export const useFilterStore = defineStore('filter', () => {
    * Limpia solo el filtro de tipo
    */
   function clearTypeFilter(): void {
-    setSelectedType(null)
+    setSelectedType('')
   }
 
   /**
@@ -323,7 +326,7 @@ export const useFilterStore = defineStore('filter', () => {
     totalTypes: availableTypes.value.length,
     hasSearchQuery: debouncedSearchQuery.value.length > 0,
     searchQueryLength: debouncedSearchQuery.value.length,
-    hasTypeFilter: selectedType.value !== null,
+    hasTypeFilter: selectedType.value !== null && selectedType.value !== '',
     activeFiltersCount: filterConfig.value.filtersApplied,
     isAnyFilterActive: hasActiveFilters.value
   }))

@@ -97,6 +97,30 @@
                     #{{ paddedId }}
                   </span>
                 </div>
+                
+                <!-- Botón de favorito -->
+                <div class="mt-4">
+                  <button
+                    @click="handleToggleFavorite"
+                    :class="[
+                      'inline-flex items-center px-4 py-2 rounded-lg font-medium transition-all duration-200',
+                      isFavorite(pokemon.id)
+                        ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg hover:shadow-xl'
+                        : 'bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
+                    ]"
+                    :title="isFavorite(pokemon.id) ? 'Remover de favoritos' : 'Agregar a favoritos'"
+                  >
+                    <svg
+                      class="w-5 h-5 mr-2"
+                      :class="isFavorite(pokemon.id) ? 'text-white' : 'text-gray-500 dark:text-gray-400'"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+                    </svg>
+                    {{ isFavorite(pokemon.id) ? 'En Favoritos' : 'Agregar a Favoritos' }}
+                  </button>
+                </div>
               </div>
 
               <!-- Tipos -->
@@ -204,12 +228,16 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { usePokemonStore } from '../stores/pokemon.store'
+import { usePokemonFavorites } from '../composables/usePokemonFavorites'
 import LoadingSpinner from '../components/common/LoadingSpinner.vue'
 import ErrorMessage from '../components/common/ErrorMessage.vue'
 
 // Route and store
 const route = useRoute()
 const pokemonStore = usePokemonStore()
+
+// Composables
+const { isFavorite, toggleFavorite } = usePokemonFavorites()
 
 // State
 const imageError = ref(false)
@@ -314,6 +342,12 @@ const getTypeClasses = (type: string): string => {
   }
   
   return typeColors[type] || 'bg-gray-400 text-white'
+}
+
+const handleToggleFavorite = () => {
+  if (pokemon.value) {
+    toggleFavorite(pokemon.value)
+  }
 }
 
 // Lifecycle
