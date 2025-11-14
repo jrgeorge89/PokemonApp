@@ -8,18 +8,24 @@
         </p>
       </div>
 
-      <!-- Contenedor de filtros en línea -->
-      <div class="filters-container mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- SearchBar component - ocupa la mitad izquierda -->
-        <div class="search-section">
-          <SearchBar />
-        </div>
+      <!--
+        OPTIMIZACIÓN: KeepAlive para componentes que cambian frecuentemente
+        Mantiene componentes en memoria cuando el usuario navega entre páginas
+        Mejora significativamente la UX al regresar a la página principal
+      -->
+      <KeepAlive>
+        <div class="filters-container mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- SearchBar component - ocupa la mitad izquierda -->
+          <div class="search-section">
+            <SearchBar />
+          </div>
 
-        <!-- TypeFilter component - ocupa la mitad derecha -->
-        <div class="filter-section">
-          <TypeFilter />
+          <!-- TypeFilter component - ocupa la mitad derecha -->
+          <div class="filter-section">
+            <TypeFilter />
+          </div>
         </div>
-      </div>
+      </KeepAlive>
 
       <!-- Estados de carga y error -->
       
@@ -113,13 +119,18 @@
           </div>
         </div>
 
-        <!-- Grid de PokemonCard components -->
+        <!--
+          OPTIMIZACIÓN: v-memo para optimizar re-renderizado de PokemonCard
+          Solo re-renderiza cuando cambian props específicas (pokemon, isFavorite)
+          Reduce cálculos innecesarios en listas grandes de Pokémon
+        -->
         <div class="pokemon-grid grid gap-6 mb-8">
           <PokemonCard
             v-for="pokemon in filteredPokemons"
             :key="pokemon.id"
             :pokemon="pokemon"
             :is-favorite="isFavorite(pokemon.id)"
+            v-memo="[pokemon.id, pokemon.name, pokemon.sprites, isFavorite(pokemon.id)]"
             @click="handlePokemonClick"
             @toggle-favorite="handleToggleFavorite"
           />
@@ -156,7 +167,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, KeepAlive } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePokemonStore } from '../stores/pokemon.store'
 import { useFilterStore } from '../stores/filter.store'

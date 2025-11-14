@@ -31,13 +31,20 @@
 
     <!-- Imagen del Pokémon -->
     <div class="pokemon-image-container flex justify-center items-center h-32 pt-4 px-4">
+      <!--
+        OPTIMIZACIÓN: Lazy loading nativo y atributos de performance
+        Mejora significativamente el tiempo de carga inicial
+        Las imágenes se cargan solo cuando entran en el viewport
+      -->
       <img
         v-if="pokemonImageUrl"
         :src="pokemonImageUrl"
-        :alt="pokemon.name"
+        :alt="`${pokemon.name} - Pokémon #${pokemon.id}`"
         class="pokemon-image w-24 h-24 object-contain transition-transform duration-300"
         @error="handleImageError"
         loading="lazy"
+        decoding="async"
+        :fetchPriority="pokemon.id <= 20 ? 'high' : 'auto'"
       >
       <div 
         v-else 

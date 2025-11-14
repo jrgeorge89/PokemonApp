@@ -1,6 +1,7 @@
 /**
  * Servicio para interactuar con PokéAPI
  * Proporciona funciones tipadas para obtener datos de Pokémon y tipos
+ * OPTIMIZACIÓN: Sistema de caché implementado para reducir requests duplicados
  */
 
 import { apiClient, isApiError } from './api.config'
@@ -11,6 +12,94 @@ import type {
   NamedAPIResource,
   ApiError
 } from '../types/pokemon.types'
+
+// =====================================
+// SISTEMA DE CACHÉ PARA OPTIMIZACIÓN
+// =====================================
+
+/**
+ * Cache simple usando Map para requests duplicados
+ * Mejora significativamente la performance al evitar requests innecesarios
+ */
+const cache = new Map<string, {
+  data: any
+  timestamp: number
+  ttl: number // Time to live en milisegundos
+}>()
+
+/**
+ * Tiempo de vida por defecto del cache: 10 minutos
+ * Los datos de Pokémon no cambian frecuentemente
+ */
+const DEFAULT_TTL = 10 * 60 * 1000
+
+/**
+ * Genera una clave única para el cache basada en URL y parámetros
+ */
+function generateCacheKey(url: string, params?: Record<string, any>): string {
+  const paramString = params ? JSON.stringify(params) : ''
+  return `${url}${paramString}`
+}
+
+/**
+ * Obtiene datos del cache si están disponibles y no han expirado
+ */
+function getFromCache<T>(key: string): T | null {
+  const cached = cache.get(key)
+  if (!cached) return null
+  
+  const now = Date.now()
+  if (now > cached.timestamp + cached.ttl) {
+    // Cache expirado, eliminarlo
+    cache.delete(key)
+    return null
+  }
+  
+  return cached.data as T
+}
+
+/**
+ * Almacena datos en el cache
+ */
+function setCache<T>(key: string, data: T, ttl: number = DEFAULT_TTL): void {
+  // Limitar el tamaño del cache para evitar uso excesivo de memoria
+  if (cache.size > 200) {
+    // Eliminar entradas más antiguas
+    const oldestKeys = Array.from(cache.keys()).slice(0, 50)
+    oldestKeys.forEach(key => cache.delete(key))
+  }
+  
+  cache.set(key, {
+    data,
+    timestamp: Date.now(),
+    ttl
+  })
+}
+
+/**
+ * OPTIMIZACIÓN: Función exportada para limpiar el cache manualmente
+ * Útil cuando se necesita forzar la actualización de datos
+ */
+export function clearCache(): void {
+  cache.clear()
+  console.log('Cache cleared successfully')
+}
+
+/**
+ * Obtiene estadísticas del cache para debugging
+ */
+export function getCacheStats() {
+  const now = Date.now()
+  const entries = Array.from(cache.entries())
+  const activeEntries = entries.filter(([, value]) => now <= value.timestamp + value.ttl)
+  
+  return {
+    totalEntries: cache.size,
+    activeEntries: activeEntries.length,
+    expiredEntries: cache.size - activeEntries.length,
+    memoryUsage: `${JSON.stringify(Array.from(cache.entries())).length} bytes (approx)`
+  }
+}
 
 /**
  * Obtiene una lista paginada de Pokémon
@@ -52,9 +141,22 @@ export async function getPokemonList(
       } as ApiError
     }
 
+    // OPTIMIZACIÓN: Verificar cache antes de hacer request
+    const cacheKey = generateCacheKey('/pokemon', { limit, offset })
+    const cached = getFromCache<PokemonListResponse>(cacheKey)
+    
+    if (cached) {
+      console.log('Cache hit for pokemon list:', { limit, offset })
+      return cached
+    }
+
     const response = await apiClient.get<PokemonListResponse>('/pokemon', {
       params: { limit, offset }
     })
+
+    // OPTIMIZACIÓN: Guardar en cache con TTL de 15 minutos (datos de lista cambian poco)
+    setCache(cacheKey, response.data, 15 * 60 * 1000)
+    console.log('Cache set for pokemon list:', { limit, offset })
 
     return response.data
   } catch (error) {
@@ -108,7 +210,21 @@ export async function getPokemonByName(name: string): Promise<Pokemon> {
       } as ApiError
     }
 
+    // OPTIMIZACIÓN: Verificar cache antes de hacer request
+    const cacheKey = generateCacheKey(`/pokemon/${cleanName}`)
+    const cached = getFromCache<Pokemon>(cacheKey)
+    
+    if (cached) {
+      console.log('Cache hit for pokemon by name:', cleanName)
+      return cached
+    }
+
     const response = await apiClient.get<Pokemon>(`/pokemon/${cleanName}`)
+    
+    // OPTIMIZACIÓN: Guardar en cache con TTL largo (datos de Pokémon individuales no cambian)
+    setCache(cacheKey, response.data, 30 * 60 * 1000) // 30 minutos
+    console.log('Cache set for pokemon by name:', cleanName)
+    
     return response.data
   } catch (error) {
     if (isApiError(error)) {
@@ -161,7 +277,21 @@ export async function getPokemonById(id: number): Promise<Pokemon> {
       } as ApiError
     }
 
+    // OPTIMIZACIÓN: Verificar cache antes de hacer request
+    const cacheKey = generateCacheKey(`/pokemon/${id}`)
+    const cached = getFromCache<Pokemon>(cacheKey)
+    
+    if (cached) {
+      console.log('Cache hit for pokemon by ID:', id)
+      return cached
+    }
+
     const response = await apiClient.get<Pokemon>(`/pokemon/${id}`)
+    
+    // OPTIMIZACIÓN: Guardar en cache con TTL largo (datos de Pokémon individuales no cambian)
+    setCache(cacheKey, response.data, 30 * 60 * 1000) // 30 minutos
+    console.log('Cache set for pokemon by ID:', id)
+    
     return response.data
   } catch (error) {
     if (isApiError(error)) {
@@ -193,6 +323,15 @@ export async function getPokemonById(id: number): Promise<Pokemon> {
  */
 export async function getAllTypes(): Promise<PokemonTypeDetail[]> {
   try {
+    // OPTIMIZACIÓN: Verificar cache para tipos (datos que cambian muy raramente)
+    const cacheKey = generateCacheKey('/types/all')
+    const cached = getFromCache<PokemonTypeDetail[]>(cacheKey)
+    
+    if (cached) {
+      console.log('Cache hit for all types')
+      return cached
+    }
+
     // Primero obtenemos la lista de tipos
     const typeListResponse = await apiClient.get<{
       count: number
@@ -204,7 +343,20 @@ export async function getAllTypes(): Promise<PokemonTypeDetail[]> {
       try {
         // Extraer el ID del tipo desde la URL
         const typeId = extractIdFromUrl(typeRef.url)
+        
+        // Verificar cache individual para cada tipo
+        const typeCacheKey = generateCacheKey(`/type/${typeId}`)
+        const cachedType = getFromCache<PokemonTypeDetail>(typeCacheKey)
+        
+        if (cachedType) {
+          return cachedType
+        }
+        
         const typeDetailResponse = await apiClient.get<PokemonTypeDetail>(`/type/${typeId}`)
+        
+        // Guardar tipo individual en cache
+        setCache(typeCacheKey, typeDetailResponse.data, 60 * 60 * 1000) // 1 hora
+        
         return typeDetailResponse.data
       } catch (error) {
         console.warn(`No se pudo obtener detalles del tipo: ${typeRef.name}`, error)
@@ -227,6 +379,10 @@ export async function getAllTypes(): Promise<PokemonTypeDetail[]> {
         timestamp: new Date().toISOString()
       } as ApiError
     }
+
+    // OPTIMIZACIÓN: Guardar resultado completo en cache con TTL largo
+    setCache(cacheKey, validTypes, 60 * 60 * 1000) // 1 hora
+    console.log('Cache set for all types')
 
     return validTypes
   } catch (error) {

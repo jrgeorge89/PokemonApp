@@ -10,11 +10,16 @@ import type { RouteRecordRaw, RouteLocationNormalized } from 'vue-router'
  * Definición de rutas de la aplicación
  * Incluye lazy loading para optimizar la carga inicial
  */
+/**
+ * OPTIMIZACIÓN: Code Splitting con imports dinámicos
+ * Divide el código en chunks separados que se cargan bajo demanda
+ * Mejora el tiempo de carga inicial de la aplicación
+ */
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
-    component: () => import('../views/HomeView.vue'),
+    component: () => import(/* webpackChunkName: "home" */ '../views/HomeView.vue'),
     meta: {
       title: 'Pokédex - Listado de Pokémon',
       description: 'Explora todos los Pokémon con búsqueda, filtros y paginación',
@@ -26,7 +31,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/pokemon/:id',
     name: 'pokemon-detail',
-    component: () => import('../views/PokemonDetailView.vue'),
+    component: () => import(/* webpackChunkName: "pokemon-detail" */ '../views/PokemonDetailView.vue'),
     props: true, // Pasa el parámetro id como prop al componente
     meta: {
       title: 'Detalles del Pokémon',
@@ -52,7 +57,7 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/favorites',
     name: 'favorites',
-    component: () => import('../views/FavoritesView.vue'),
+    component: () => import(/* webpackChunkName: "favorites" */ '../views/FavoritesView.vue'),
     meta: {
       title: 'Pokémon Favoritos',
       description: 'Tu colección personal de Pokémon favoritos',
